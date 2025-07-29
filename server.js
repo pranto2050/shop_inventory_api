@@ -28,6 +28,9 @@ const FILES = {
   returns: path.join(DATA_DIR, 'returns.json')
 };
 
+
+
+
 // Initialize default data files
 const initializeFiles = async () => {
   // Initialize products.json with default products
@@ -100,6 +103,10 @@ const initializeFiles = async () => {
     await fs.writeJSON(FILES.users, [], { spaces: 2 });
   }
 
+
+
+
+
   // Initialize categories.json
   if (!await fs.pathExists(FILES.categories)) {
     const defaultCategories = [
@@ -124,6 +131,10 @@ const initializeFiles = async () => {
     ];
     await fs.writeJSON(FILES.categories, defaultCategories, { spaces: 2 });
   }
+
+
+
+
 
   // Initialize brands.json
   if (!await fs.pathExists(FILES.brands)) {
@@ -150,6 +161,10 @@ const initializeFiles = async () => {
     await fs.writeJSON(FILES.brands, defaultBrands, { spaces: 2 });
   }
 
+
+
+
+
   // Initialize other files
   const emptyArrayFiles = ['sales', 'purchases', 'returns'];
   for (const file of emptyArrayFiles) {
@@ -158,6 +173,10 @@ const initializeFiles = async () => {
     }
   }
 };
+
+
+
+
 
 // Helper functions
 const readJsonFile = async (filePath) => {
@@ -179,6 +198,8 @@ const writeJsonFile = async (filePath, data) => {
   }
 };
 
+
+
 // Products API
 app.get('/api/products', async (req, res) => {
   const products = await readJsonFile(FILES.products);
@@ -197,6 +218,8 @@ app.post('/api/products', async (req, res) => {
   }
 });
 
+
+
 app.put('/api/products/:id', async (req, res) => {
   const products = await readJsonFile(FILES.products);
   const index = products.findIndex(p => p.id === req.params.id);
@@ -213,6 +236,9 @@ app.put('/api/products/:id', async (req, res) => {
   }
 });
 
+
+
+
 app.delete('/api/products/:id', async (req, res) => {
   const products = await readJsonFile(FILES.products);
   const filteredProducts = products.filter(p => p.id !== req.params.id);
@@ -223,6 +249,8 @@ app.delete('/api/products/:id', async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to delete product' });
   }
 });
+
+
 
 // Categories API
 app.get('/api/categories', async (req, res) => {
@@ -241,6 +269,8 @@ app.post('/api/categories', async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to save category' });
   }
 });
+
+
 
 app.delete('/api/categories/:id', async (req, res) => {
   const categories = await readJsonFile(FILES.categories);
