@@ -472,6 +472,33 @@ app.post('/api/auth/login', async (req, res) => {
 
 // Warranty Management APIs
 
+// Get all sales with warranty information
+app.get('/api/sales-with-warranty', async (req, res) => {
+  try {
+    const sales = await readJsonFile(FILES.sales);
+    // Filter sales that have warranty information
+    const salesWithWarranty = sales.filter(sale => sale.warrantyEndDate);
+    
+    // Calculate warranty status for each sale
+    const today = new Date();
+    const warrantyInfo = salesWithWarranty.map(sale => {
+      const warrantyEndDate = new Date(sale.warrantyEndDate);
+      const isWarrantyActive = today <= warrantyEndDate;
+      
+      return {
+        ...sale,
+        warrantyStatus: isWarrantyActive ? 'active' : 'expired',
+        daysRemaining: isWarrantyActive ? Math.ceil((warrantyEndDate - today) / (1000 * 60 * 60 * 24)) : 0
+      };
+    });
+    
+    res.json({ success: true, salesWithWarranty: warrantyInfo });
+  } catch (error) {
+    console.error('Error fetching sales with warranty:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch sales with warranty' });
+  }
+});
+
 // Save sale with warranty info to daily sales file
 app.post('/api/sales-with-warranty', async (req, res) => {
   try {
