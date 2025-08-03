@@ -178,6 +178,10 @@ const initializeFiles = async () => {
 
 
 
+
+
+
+
 // Helper functions
 const readJsonFile = async (filePath) => {
   try {
@@ -197,6 +201,12 @@ const writeJsonFile = async (filePath, data) => {
     return false;
   }
 };
+
+
+
+
+
+
 
 
 
@@ -249,6 +259,58 @@ app.delete('/api/products/:id', async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to delete product' });
   }
 });
+
+
+
+
+
+// New Products API - 03-08-2025  10:59 AM
+app.get('/api/newproducts', async (req, res) => {
+  const products = await readJsonFile(FILES.products);
+  res.json(products);
+});
+
+// Sold Products API - 03-08-2025  10:59 AM
+
+app.get('/api/soldproducts', async (req, res) => {
+  const sales = await readJsonFile(FILES.sales);
+  res.json(sales);
+});
+
+app.get('/api/soldproducts', async (req, res) => {
+  try {
+    const sales = await readJsonFile('./data/sales.json');
+    res.json(sales);
+  } catch (error) {
+    console.error('Error loading sold products:', error);
+    res.status(500).json({ error: 'Failed to load sold products' });
+  }
+});
+
+/*. 
+Thanks for sharing your server.js. You're already importing FILES and using readJsonFile, so adding the /api/soldproducts endpoint is very straightforward.
+
+✅ Updated server.js with /api/soldproducts
+Add this snippet below your /api/sales endpoint (or anywhere near similar endpoints):
+
+*/
+app.get("/api/soldproducts", async (req, res) => {
+  try {
+    const sales = await readJsonFile(FILES.sales); // Reuse the sales.json data
+    res.json(sales);
+  } catch (error) {
+    console.error("Error reading sold products:", error);
+    res.status(500).json({ error: "Failed to load sold products" });
+  }
+});
+
+
+
+
+
+
+
+
 
 
 
@@ -374,6 +436,8 @@ app.post('/api/administrators', async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to save administrator' });
   }
 });
+
+
 
 // Sales API
 app.get('/api/sales', async (req, res) => {
