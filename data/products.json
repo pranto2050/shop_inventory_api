@@ -19,7 +19,9 @@
     "commonId": "GHJH",
     "uniqueId": "GHJ-1753903056120-973",
     "subcategory": "",
-    "model": ""
+    "model": "",
+    "warranty_start": "",
+    "warranty_end": ""
   },
   {
     "id": "IT2025-1753904123846",
@@ -41,7 +43,9 @@
     "commonId": "ADASDA",
     "uniqueId": "ADA-1753904113582-982",
     "subcategory": "",
-    "model": ""
+    "model": "",
+    "warranty_start": "",
+    "warranty_end": ""
   },
   {
     "id": "IT2025-1753906837499",
@@ -63,6 +67,38 @@
     "commonId": "ADASDAS",
     "uniqueId": "ADA-1753906827298-834",
     "subcategory": "",
-    "model": ""
-  }
+    "model": "",
+    "warranty_start": "",
+    "warranty_end": ""
+  },
+  {
+  "id": "IT2025-1753903074632",
+  "name": "TP-Link Archer A6",
+  "brand": "TP-Link",
+  "brandDescription": "Leading networking equipment manufacturer",
+  "brandLogo": "https://example.com/tplink-logo.png",
+  "supplier": "TP-Link Distributor",
+  "addedDate": "2025-07-30",
+  "buysellpricePerUnit": 100,
+  "sellpricePerUnit": 200,
+  "stock": 10,
+  "unit": "Pieces",
+  "category": "Networking",
+  "rating": 4.5,
+  "image": "https://example.com/images/archer-a6.jpg",
+  "description": "Dual-band wireless router with MU-MIMO technology and Gigabit ports.",
+  "specifications": {
+    "WiFi Standard": "802.11ac",
+    "Bands": "2.4GHz & 5GHz",
+    "LAN Ports": 4,
+    "WAN Port": 1
+  },
+  "commonId": "TPL-ARCHER-A6",
+  "uniqueId": "TPL-1753903056120-973",
+  "subcategory": "Wireless Routers",
+  "model": "Archer A6",
+  "warranty_start": "2025-07-30",
+  "warranty_end": "2027-07-30"
+}
+
 ]
