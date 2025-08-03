@@ -714,4 +714,4 @@ initializeFiles().then(() => {
   });
 }).catch(error => {
   console.error('Failed to initialize server:', error);
-});
+});// Force rebuild - Sun Aug  3 23:56:35 +06 2025
