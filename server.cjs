@@ -472,6 +472,44 @@ app.post('/api/auth/login', async (req, res) => {
 
 // Warranty Management APIs
 
+// Get all sales with warranty information
+app.get('/api/sales-with-warranty', async (req, res) => {
+  try {
+    const salesFiles = await fs.readdir(SALES_DIR);
+    const allSalesWithWarranty = [];
+    
+    // Read through all daily sales files
+    for (const file of salesFiles) {
+      if (file.endsWith('.json')) {
+        const filePath = path.join(SALES_DIR, file);
+        const dailySales = await readJsonFile(filePath);
+        allSalesWithWarranty.push(...dailySales);
+      }
+    }
+    
+    // Calculate warranty status for each sale
+    const today = new Date();
+    const salesWithWarrantyStatus = allSalesWithWarranty.map(sale => {
+      if (sale.warrantyEndDate) {
+        const warrantyEndDate = new Date(sale.warrantyEndDate);
+        const isWarrantyActive = today <= warrantyEndDate;
+        
+        return {
+          ...sale,
+          warrantyStatus: isWarrantyActive ? 'active' : 'expired',
+          daysRemaining: isWarrantyActive ? Math.ceil((warrantyEndDate - today) / (1000 * 60 * 60 * 24)) : 0
+        };
+      }
+      return sale;
+    });
+    
+    res.json({ success: true, sales: salesWithWarrantyStatus });
+  } catch (error) {
+    console.error('Error retrieving sales with warranty:', error);
+    res.status(500).json({ success: false, message: 'Failed to retrieve sales with warranty' });
+  }
+});
+
 // Save sale with warranty info to daily sales file
 app.post('/api/sales-with-warranty', async (req, res) => {
   try {
