@@ -182,6 +182,23 @@ app.get('/api/products', async (req, res) => {
   res.json(products);
 });
 
+// Get a single product by ID
+app.get('/api/products/:id', async (req, res) => {
+  try {
+    const products = await readJsonFile(FILES.products);
+    const product = products.find(p => p.id === req.params.id);
+
+    if (product) {
+      res.json({ success: true, product });
+    } else {
+      res.status(404).json({ success: false, message: 'Product not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching single product:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch product' });
+  }
+});
+
 app.post('/api/products', async (req, res) => {
   const products = await readJsonFile(FILES.products);
   // Ensure subcategory and model fields are always present
