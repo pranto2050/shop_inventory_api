@@ -20,88 +20,33 @@ const DATA_DIR = path.join(__dirname, 'data');
 // Ensure data directory exists
 fs.ensureDirSync(DATA_DIR);
 
-// File paths
+// File paths for JSON data
 const FILES = {
   products: path.join(DATA_DIR, 'products.json'),
   users: path.join(DATA_DIR, 'users.json'),
   administrators: path.join(DATA_DIR, 'administrators.json'),
   categories: path.join(DATA_DIR, 'categories.json'),
   brands: path.join(DATA_DIR, 'brands.json'),
-  sales: path.join(DATA_DIR, 'sales.json'),
+  sales: path.join(DATA_DIR, 'sales.json'), // Main sales file (for backward compatibility)
   purchases: path.join(DATA_DIR, 'purchases.json'),
   returns: path.join(DATA_DIR, 'returns.json'),
   warranties: path.join(DATA_DIR, 'warranty-approvals.json')
 };
 
-// POST categories (overwrite with new data)
-app.post('/api/categories', async (req, res) => {
-  const newCategories = req.body;
-  try {
-    await fs.writeFile(FILES.categories, JSON.stringify(newCategories, null, 2));
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to save categories.' });
-  }
-});
-
-// Ensure sales and warranty subdirectories exist
-const SALES_DIR = path.join(DATA_DIR, 'sales');
-const WARRANTY_DIR = path.join(DATA_DIR, 'warranty');
+// Ensure sales and warranty subdirectories exist for daily sales/warranty files
+const SALES_DIR = path.join(DATA_DIR, 'sales'); // For daily sales records
+const WARRANTY_DIR = path.join(DATA_DIR, 'warranty'); // Not explicitly used in current API, but good to have
 fs.ensureDirSync(SALES_DIR);
 fs.ensureDirSync(WARRANTY_DIR);
 
-// Initialize default data files
+// Initialize default data files if they don't exist
 const initializeFiles = async () => {
-  // Initialize products.json with default products
-  // if (!await fs.pathExists(FILES.products)) {
-  //   const defaultProducts = [
-  //     {
-  //       id: 'IT2025-RTR001',
-  //       name: 'TP-Link Archer C6 AC1200 Wireless Router',
-  //       brand: 'TP-Link',
-  //       supplier: 'TP-Link Bangladesh',
-  //       addedDate: '2024-01-15',
-  //       pricePerUnit: 3500,
-  //       stock: 25,
-  //       unit: 'piece',
-  //       category: 'Networking',
-  //       rating: 4.7,
-  //       image: 'https://images.pexels.com/photos/4219654/pexels-photo-4219654.jpeg?auto=compress&cs=tinysrgb&w=400',
-  //       description: 'High-speed dual-band wireless router with 4 Gigabit LAN ports and advanced security features.',
-  //       specifications: {
-  //         'Wireless Standard': '802.11ac',
-  //         'Speed': '1200 Mbps',
-  //         'Frequency': '2.4GHz + 5GHz',
-  //         'Antennas': '4 External',
-  //         'Ports': '4 x Gigabit LAN'
-  //       }
-  //     },
-  //     {
-  //       id: 'IT2025-SSD001',
-  //       name: 'WD Blue 500GB SATA SSD',
-  //       brand: 'Western Digital',
-  //       supplier: 'WD Bangladesh',
-  //       addedDate: '2024-01-20',
-  //       pricePerUnit: 4200,
-  //       stock: 40,
-  //       unit: 'piece',
-  //       category: 'Storage',
-  //       rating: 4.8,
-  //       image: 'https://images.pexels.com/photos/163100/circuit-circuit-board-resistor-computer-163100.jpeg?auto=compress&cs=tinysrgb&w=400',
-  //       description: 'Fast and reliable 500GB SATA SSD for improved system performance and faster boot times.',
-  //       specifications: {
-  //         'Capacity': '500GB',
-  //         'Interface': 'SATA 6Gb/s',
-  //         'Read Speed': '560 MB/s',
-  //         'Write Speed': '530 MB/s',
-  //         'Form Factor': '2.5 inch'
-  //       }
-  //     }
-  //   ];
-  //   await fs.writeJSON(FILES.products, defaultProducts, { spaces: 2 });
-  // }
+  // Initialize products.json (default products commented out, assuming they are added via API or exist)
+  if (!await fs.pathExists(FILES.products)) {
+    await fs.writeJSON(FILES.products, [], { spaces: 2 }); // Initialize as empty array if not exists
+  }
 
-  // Initialize administrators.json
+  // Initialize administrators.json with default admin
   if (!await fs.pathExists(FILES.administrators)) {
     const defaultAdmins = [
       {
@@ -125,30 +70,25 @@ const initializeFiles = async () => {
   // Initialize categories.json
   if (!await fs.pathExists(FILES.categories)) {
     const defaultCategories = [
-      {
-        id: 'cat-001',
-        name: 'Networking',
-        description: 'Network equipment and accessories',
-        createdDate: '2024-01-01'
-      },
-      {
-        id: 'cat-002',
-        name: 'Storage',
-        description: 'Storage devices and solutions',
-        createdDate: '2024-01-01'
-      },
-      {
-        id: 'cat-003',
-        name: 'Computing',
-        description: 'Computers and related hardware',
-        createdDate: '2024-01-01'
-      }
+      { id: 'cat-001', name: 'Networking', description: 'Network equipment and accessories', createdDate: '2024-01-01' },
+      { id: 'cat-002', name: 'Storage', description: 'Storage devices and solutions', createdDate: '2024-01-01' },
+      { id: 'cat-003', name: 'Computing', description: 'Computers and related hardware', createdDate: '2024-01-01' }
     ];
     await fs.writeJSON(FILES.categories, defaultCategories, { spaces: 2 });
   }
 
-  // Initialize other files
-  const emptyArrayFiles = ['sales', 'purchases', 'returns'];
+  // Initialize brands.json
+  if (!await fs.pathExists(FILES.brands)) {
+    const defaultBrands = [
+      { id: 'brand-001', name: 'TP-Link', description: 'Leading networking equipment manufacturer', createdDate: '2024-01-01' },
+      { id: 'brand-002', name: 'Western Digital', description: 'Reliable storage solutions provider', createdDate: '2024-01-01' },
+      { id: 'brand-003', name: 'Samsung', description: 'Premium electronics and storage manufacturer', createdDate: '2024-01-01' }
+    ];
+    await fs.writeJSON(FILES.brands, defaultBrands, { spaces: 2 });
+  }
+
+  // Initialize other files as empty arrays
+  const emptyArrayFiles = ['sales', 'purchases', 'returns', 'warranties']; // Added 'warranties'
   for (const file of emptyArrayFiles) {
     if (!await fs.pathExists(FILES[file])) {
       await fs.writeJSON(FILES[file], [], { spaces: 2 });
@@ -156,13 +96,13 @@ const initializeFiles = async () => {
   }
 };
 
-// Helper functions
+// Helper functions to read and write JSON files
 const readJsonFile = async (filePath) => {
   try {
     return await fs.readJSON(filePath);
   } catch (error) {
     console.error(`Error reading ${filePath}:`, error);
-    return [];
+    return []; // Return empty array on error to prevent crashes
   }
 };
 
@@ -175,6 +115,8 @@ const writeJsonFile = async (filePath, data) => {
     return false;
   }
 };
+
+// --- API Endpoints ---
 
 // Products API
 app.get('/api/products', async (req, res) => {
@@ -201,12 +143,11 @@ app.get('/api/products/:id', async (req, res) => {
 
 app.post('/api/products', async (req, res) => {
   const products = await readJsonFile(FILES.products);
-  // Ensure subcategory and model fields are always present
   const newProduct = {
     ...req.body,
     id: `IT2025-${Date.now()}`,
-    subcategory: req.body.subcategory || '',
-    model: req.body.model || ''
+    subcategory: req.body.subcategory || '', // Ensure subcategory is present
+    model: req.body.model || '' // Ensure model is present
   };
   products.push(newProduct);
   
@@ -222,7 +163,6 @@ app.put('/api/products/:id', async (req, res) => {
   const index = products.findIndex(p => p.id === req.params.id);
   
   if (index !== -1) {
-    // Ensure subcategory and model fields are always present
     products[index] = {
       ...products[index],
       ...req.body,
@@ -301,19 +241,16 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
-// Update user details
 app.put('/api/users/:id', async (req, res) => {
   const users = await readJsonFile(FILES.users);
   const index = users.findIndex(u => u.id === req.params.id);
   if (index === -1) {
     return res.status(404).json({ success: false, message: 'User not found' });
   }
-  // Prevent duplicate email or name (except for the user being updated)
   const { email, name } = req.body;
   if (users.some((u, i) => i !== index && (u.email === email || u.name === name))) {
     return res.status(400).json({ success: false, message: 'User with this email or name already exists.' });
   }
-  // Update fields
   users[index] = { ...users[index], ...req.body };
   if (await writeJsonFile(FILES.users, users)) {
     res.json({ success: true, user: users[index], message: '🔄 User updated' });
@@ -350,14 +287,12 @@ app.post('/api/administrators', async (req, res) => {
   }
 });
 
-// Update admin details
 app.put('/api/administrators/:id', async (req, res) => {
   const administrators = await readJsonFile(FILES.administrators);
   const index = administrators.findIndex(a => a.id === req.params.id);
   if (index === -1) {
     return res.status(404).json({ success: false, message: 'Admin not found' });
   }
-  // Prevent duplicate email or name (except for the admin being updated)
   const { email, name } = req.body;
   if (administrators.some((a, i) => i !== index && (a.email === email || a.name === name))) {
     return res.status(400).json({ success: false, message: 'Admin with this email or name already exists.' });
@@ -370,7 +305,6 @@ app.put('/api/administrators/:id', async (req, res) => {
   }
 });
 
-// Delete admin
 app.delete('/api/administrators/:id', async (req, res) => {
   const administrators = await readJsonFile(FILES.administrators);
   const filteredAdmins = administrators.filter(a => a.id !== req.params.id);
@@ -381,7 +315,7 @@ app.delete('/api/administrators/:id', async (req, res) => {
   }
 });
 
-// Sales API
+// Sales API (Main sales.json for backward compatibility)
 app.get('/api/sales', async (req, res) => {
   const sales = await readJsonFile(FILES.sales);
   res.json(sales);
@@ -390,12 +324,9 @@ app.get('/api/sales', async (req, res) => {
 app.post('/api/sales', async (req, res) => {
   try {
     const sale = req.body;
-    
-    // Read existing sales
     const sales = await readJsonFile(FILES.sales);
     sales.push(sale);
     await writeJsonFile(FILES.sales, sales);
-    
     res.json({ success: true, message: 'Sale recorded successfully' });
   } catch (error) {
     console.error('Error saving sale:', error);
@@ -442,21 +373,18 @@ app.post('/api/returns', async (req, res) => {
 // Authentication API
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
-  // Check administrators first
   const administrators = await readJsonFile(FILES.administrators);
   const admin = administrators.find(a => a.email === email && a.password === password);
   if (admin) {
     res.json({ success: true, user: admin });
     return;
   }
-  // Check users
   const users = await readJsonFile(FILES.users);
   const user = users.find(u => u.email === email && u.password === password);
   if (user) {
     res.json({ success: true, user });
     return;
   }
-  // Check sellers
   const sellersPath = path.join(DATA_DIR, 'sellers.json');
   let sellers = [];
   if (await fs.pathExists(sellersPath)) {
@@ -470,15 +398,14 @@ app.post('/api/auth/login', async (req, res) => {
   res.status(401).json({ success: false, message: 'Invalid credentials' });
 });
 
-// Warranty Management APIs
+// --- Warranty Management APIs ---
 
-// Get all sales with warranty information
+// GET all sales with warranty information (from daily sales files)
 app.get('/api/sales-with-warranty', async (req, res) => {
   try {
     const salesFiles = await fs.readdir(SALES_DIR);
     const allSalesWithWarranty = [];
     
-    // Read through all daily sales files
     for (const file of salesFiles) {
       if (file.endsWith('.json')) {
         const filePath = path.join(SALES_DIR, file);
@@ -487,7 +414,6 @@ app.get('/api/sales-with-warranty', async (req, res) => {
       }
     }
     
-    // Calculate warranty status for each sale
     const today = new Date();
     const salesWithWarrantyStatus = allSalesWithWarranty.map(sale => {
       if (sale.warrantyEndDate) {
@@ -510,14 +436,13 @@ app.get('/api/sales-with-warranty', async (req, res) => {
   }
 });
 
-// Save sale with warranty info to daily sales file
+// POST a new sale with warranty info to daily sales file
 app.post('/api/sales-with-warranty', async (req, res) => {
   try {
     const saleData = req.body;
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
     const dailySalesFile = path.join(SALES_DIR, `${today}.json`);
-    
-    // Generate sale ID
+
     const saleId = `s-${Date.now()}`;
     const saleRecord = {
       saleId,
@@ -525,7 +450,6 @@ app.post('/api/sales-with-warranty', async (req, res) => {
       timestamp: new Date().toISOString()
     };
     
-    // Read existing daily sales or create new array
     let dailySales = [];
     if (await fs.pathExists(dailySalesFile)) {
       dailySales = await readJsonFile(dailySalesFile);
@@ -553,13 +477,11 @@ app.get('/api/warranty/search/:searchQuery', async (req, res) => {
     const salesFiles = await fs.readdir(SALES_DIR);
     const matchingSales = [];
     
-    // Search through all daily sales files
     for (const file of salesFiles) {
       if (file.endsWith('.json')) {
         const filePath = path.join(SALES_DIR, file);
         const dailySales = await readJsonFile(filePath);
         
-        // Filter by product ID, customer mobile, or customer email
         const filtered = dailySales.filter(sale => 
           sale.productId === searchQuery ||
           sale.customerMobile === searchQuery ||
@@ -571,7 +493,6 @@ app.get('/api/warranty/search/:searchQuery', async (req, res) => {
       }
     }
     
-    // Calculate warranty status for each sale
     const today = new Date();
     const warrantyInfo = matchingSales.map(sale => {
       const warrantyEndDate = new Date(sale.warrantyEndDate);
@@ -608,7 +529,6 @@ app.post('/api/warranty/approve', async (req, res) => {
       timestamp: new Date().toISOString()
     };
     
-    // Read existing approvals
     let approvals = [];
     if (await fs.pathExists(FILES.warranties)) {
       approvals = await readJsonFile(FILES.warranties);
@@ -660,7 +580,6 @@ app.get('/api/sales/daily/:date', async (req, res) => {
 app.get('/api/soldproducts', async (req, res) => {
   try {
     const sales = await readJsonFile(FILES.sales);
-    // Map sales data to soldProducts format for backward compatibility
     const soldProducts = sales.map(sale => ({
       saleId: sale.saleId,
       productId: sale.productId,
@@ -690,7 +609,7 @@ app.get('/api/soldproducts', async (req, res) => {
 app.get('/api/brands', async (req, res) => {
   try {
     const brands = await readJsonFile(FILES.brands);
-    res.json(brands); // Return array directly
+    res.json(brands);
   } catch (error) {
     console.error('Error fetching brands:', error);
     res.status(500).json([]);
@@ -755,7 +674,6 @@ app.delete('/api/brands/:id', async (req, res) => {
 // Data Clear API
 app.post('/api/data-clear', async (req, res) => {
   try {
-    // List of files to clear/reset
     const filesToClear = [
       { path: FILES.products, defaultValue: [] },
       { path: FILES.sales, defaultValue: [] },
@@ -797,12 +715,3 @@ initializeFiles().then(() => {
 }).catch(error => {
   console.error('Failed to initialize server:', error);
 });
-
-
-
-
-
-
-
-
-
